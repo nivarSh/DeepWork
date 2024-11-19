@@ -1,0 +1,119 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Set Timer
+{% endblock %}
+
+{% block main %}
+<script>
+    let timerInterval;
+
+    function startTimer(duration, display) {
+        let timer = duration;
+        let minutes, seconds;
+
+        timerInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                clearInterval(timerInterval); // Stop the timer when it reaches 0
+                document.getElementById('sessionCompletedAlert').style.display = 'block'; // Show the alert
+                document.getElementById('timerSound').play(); //play sound
+                
+            }
+        }, 1000);
+    }
+
+    window.onload = function () {
+        let remainingTime = localStorage.getItem('timer');
+        if (!remainingTime) {
+            remainingTime = parseInt("{{ minutes }}", 10) * 60; // Replace "{{ minutes }}" with your default minutes value
+        } else {
+            remainingTime = parseInt(remainingTime, 10);
+        }
+
+        const display = document.querySelector('#time');
+        startTimer(remainingTime, display);
+    };
+
+    function saveTimerState() {
+        clearInterval(timerInterval);
+    }
+
+    // JavaScript to toggle selected class on click
+    function toggleColor(element) {
+            element.classList.toggle('selected');
+        }
+    
+        document.addEventListener("DOMContentLoaded", ()=>{
+
+    // Whenever clear list button is clicked, delete the all the items in the unordered list
+    document.querySelector("#eraser").onclick = () => {
+        document.querySelector("#tasks").innerHTML = '';
+    }
+
+    //By default, submit button is disabled
+    document.querySelector("#submit").disabled = true;
+
+    document.querySelector("#task").onkeyup = () => {
+        if (document.querySelector("#task").value.length > 0) {
+            document.querySelector("#submit").disabled = false;
+        } else{
+            document.querySelector("#submit").disabled = true;
+        }
+    }
+
+    // We want to store the input value in a variable
+    //const submit = document.querySelector("#submit");
+    const newTask = document.querySelector("#task");
+
+    document.querySelector("form").onsubmit = () =>{
+        const task = newTask.value;
+        console.log(task);
+
+        const li = document.createElement('li');
+        li.innerHTML = task;
+        li.onclick = function() {
+            toggleColor(this);
+        };
+
+        document.querySelector("#tasks").append(li);
+        document.querySelector("#task").value = '';
+        document.querySelector("#submit").disabled = true;
+
+        // By default, when forms are submitted they try to take you to a new pagee, so to prevent that
+        return false;
+    }
+})
+</script>
+
+    <div id="sessionCompletedAlert" class="alert alert-success mb-0 text-center" role="alert" style="display: none;">Session Completed! 
+    <a href="/log_session" class="alert-link">Log Session?</a></div>
+
+    <h3 style="margin-top:10px;">Timer</h3>
+    <div id="time" style="color: whitesmoke">00:00</div>
+
+    <audio id="timerSound" src="/static/oppie.mp3" preload="auto"></audio>
+
+    <h3>Tasks</h3>
+    <ul id="tasks">    
+    </ul>
+
+    <div>
+        <form class="w-25" style="margin-left:auto; margin-right:auto;">
+            <label for="task" style="color: whitesmoke">New Task:</label>
+            <input class="form-control" autocomplete="off" style="background-color: darkslategray !important; color: whitesmoke !important;" type="text" id="task" name="task" required>
+            <input type="hidden" name="minutes" value="{{ minutes }}">
+            <button id="submit" type="submit" style="margin-top: 20px;" class="btn btn-success">Add Task</button>
+        </form>
+    </div>
+    <div style="margin-top: 8px">
+        <button id="eraser" class="btn btn-success">Clear</button>
+    </div>
+{% endblock %}

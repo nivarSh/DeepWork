@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Set Timer
+{% endblock %}
+
+{% block main %}
+    <h3>Set a Timer</h3>
+    <form action="/start_timer" method="post" class="w-25" style="margin-left:auto; margin-right:auto;">
+        <label for="minutes" style="color: whitesmoke">Minutes:</label>
+        <input autocomplete="off" class="form-control" style="background-color: darkslategray !important; color: whitesmoke !important;" type="number" id="minutes" name="minutes" required>
+        <button type="submit" class="btn btn-success" style="margin-top: 10px">Start</button>
+    </form>
+{% endblock %}
